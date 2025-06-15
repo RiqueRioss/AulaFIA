@@ -1,26 +1,16 @@
 import streamlit as st
 import google.generativeai as genai
 
+chave = st.secrets["CHAVE"]
+
 # Configura a API key do Gemini
-genai.configure(api_key="AIzaSyCypmU70v-JMILExV16mab91fe5ppY5xIo")
+genai.configure(api_key= chave)
 
 # Carrega o modelo
 model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Função para gerar recomendações com base na classificação, gênero e filmes favoritos
-def gerar_recomendacoes(classificacao, genero, filmes_favoritos):
-    if filmes_favoritos.strip():
-        prompt = (
-            f"Recomende 5 filmes semelhantes a estes: {filmes_favoritos}. "
-            f"As recomendações devem ser do gênero {genero} e apropriadas para a classificação etária {classificacao}. "
-            "Para cada filme, diga o nome, uma pequena sinopse e o ano de lançamento."
-        )
-    else:
-        prompt = (
-            f"Recomende 5 filmes do gênero {genero} que sejam apropriados para a classificação etária {classificacao}. "
-            "Para cada filme, diga o nome, uma pequena sinopse e o ano de lançamento."
-        )
-
+def gerar_recomendacoes(prompt):
     try:
         response = model.generate_content(prompt)
         return response.text
@@ -52,20 +42,36 @@ generos = [
 ]
 
 # Seleção da classificação etária
-escolha_classificacao = st.selectbox("Escolha a classificação etária:", classificacoes)
+escolha_classificacao = st.selectbox("Escolha a classificação etária:", classificacoes, index = None, placeholder = "Deixe em branco, caso queira qualquer classificação etária.")
+if (escolha_classificacao):
+    escolha_classificacao = "apropriados para a classificação etária: " + escolha_classificacao + ", "
+else:
+    escolha_classificacao = ""
 
 # Seleção do gênero
-escolha_genero = st.selectbox("Escolha o gênero do filme:", generos)
+escolha_genero = st.selectbox("Escolha o gênero do filme:", generos,index= None, placeholder = "Deixe em branco, caso queira qualquer gênero.")
+if (escolha_genero):
+    if(escolha_genero == "Outros"):
+        escolha_genero = st.text_input("Qual gênero você deseja?")
+    escolha_genero = "do gênero: "+ escolha_genero + ", "
+else:
+    escolha_genero = ""
 
 # Campo opcional de filmes favoritos
 filmes_favoritos = st.text_area(
-    "Digite alguns filmes que você gosta (opcional):",
-    placeholder="Ex: Vingadores, Matrix, O Senhor dos Anéis"
+    "Digite alguns filmes que você gosta:",
+    placeholder="Ex: Vingadores, Matrix, O Senhor dos Anéis",
 )
+if (filmes_favoritos):
+    filmes_favoritos = "semelhantes a estes: "+ filmes_favoritos
+if(not filmes_favoritos and not escolha_classificacao and not escolha_genero):
+    st.warning("Escolha pelo menos uma opção das anteriores!")
+else:
+    prompt = f"Recomende 5 filmes que sejam " + escolha_classificacao + escolha_genero + filmes_favoritos
+    # Botão de gerar recomendação
+    if st.button("Recomendar Filmes"):
+        with st.spinner("Buscando recomendações..."):
+            resultado = gerar_recomendacoes(prompt)
+            st.subheader("🎥 Recomendações de Filmes:")
+            st.write(resultado)
 
-# Botão de gerar recomendação
-if st.button("Recomendar Filmes"):
-    with st.spinner("Buscando recomendações..."):
-        resultado = gerar_recomendacoes(escolha_classificacao, escolha_genero, filmes_favoritos)
-        st.subheader("🎥 Recomendações de Filmes:")
-        st.write(resultado)
