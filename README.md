@@ -1,4 +1,4 @@
-#Como Executar Localmente(GIT)
+# Como Executar Localmente(GIT)
 1. Clone
 crie ou entre na pasta desejada
 clone o repositório:
@@ -15,12 +15,13 @@ pip install google-generativeai
 Copiar código
 streamlit run app.py
 
-#Configuração da API do Google Gemini
+# Configuração da API do Google Gemini
 Acesse Google AI Studio e obtenha sua API Key.
 Substitua no código no arquivo localizado em script3.py e na linha 4 a chave:
+
 Exemplo: chave = "Sua Chave"
 
-#Exemplo de Uso
+# Exemplo de Uso
 Acesse o site local gerado pelo Streamlit
 
 Escolha a classificação etária
