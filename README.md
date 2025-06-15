@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # AulaFIA
 =======
 # Como Executar Localmente(GIT)
@@ -35,4 +34,3 @@ Digite filmes que você gosta para personalizar
 
 Clique em "Recomendar Filmes"
 Veja as sugestões geradas com nome, sinopse e ano
->>>>>>> origin/master
